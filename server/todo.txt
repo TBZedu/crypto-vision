@@ -1,0 +1,12 @@
+Tradingbot
+- (sequence Diagramm)
+- Tests erweitern
+- Testprotokoll
+- Projektjournal ergänzen
+- Dokumentation (Fazit, Reflexion)
+
+Vinolandia (Sonntag)
+- Testdaten
+- Dokumentation
+- Arbeitsprotokol 
+- use-case anpassen
