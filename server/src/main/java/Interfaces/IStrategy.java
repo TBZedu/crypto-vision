@@ -13,6 +13,8 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 public interface IStrategy {
+    String getName();
+
     Double getSecretKey();
 
     Double getLimitPrice();

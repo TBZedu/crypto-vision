@@ -1,33 +1,18 @@
 plugins {
-    id 'org.springframework.boot' version '2.4.4'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
-    id 'org.springframework.experimental.aot' version '0.9.1'
 }
 
 group 'org.example'
 version '1.0-SNAPSHOT'
-sourceCompatibility = '11'
 
 repositories {
-    maven { url 'https://repo.spring.io/release' }
     mavenCentral()
     jcenter()
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    implementation 'org.springframework.boot:spring-boot-starter'
     compile "net.jacobpeterson:alpaca-java:5.2"
     compile "org.reflections:reflections:0.9.12"
     testImplementation "org.powermock:powermock-api-mockito2:2.0.2"
-}
-
-test {
-    useJUnitPlatform()
-}
-
-bootBuildImage {
-    builder = 'paketobuildpacks/builder:tiny'
-    environment = ['BP_NATIVE_IMAGE': 'true']
 }

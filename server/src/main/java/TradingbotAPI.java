@@ -35,7 +35,7 @@ public class TradingbotAPI implements ITradingbotAPI {
                     closeOrder();
                 }
                 System.out.println("Sets order");
-                 int accountCash = (int)(Double.parseDouble(this.alpacaAPI.getAccount().getEquity()) / 100 * configuration.getRiskFactor() / stockPrice);
+                int accountCash = (int)(Double.parseDouble(this.alpacaAPI.getAccount().getEquity()) / 100 * configuration.getRiskFactor() / stockPrice);
 
                 this.alpacaAPI.requestNewOrder(configuration.getSymbol(), accountCash , orderSide, configuration.getStrategy().getOrderType(), configuration.getStrategy().getOrderTimeInForce(), configuration.getStrategy().getLimitPrice(), configuration.getStrategy().getStopPrice(), configuration.getStrategy().getTrailPrice(), configuration.getStrategy().getTrailPercent(), configuration.getStrategy().getExtendedHours(), configuration.getStrategy().getClientOrderID(), configuration.getStrategy().getOrderClass(), configuration.getStrategy().getTakeProfitLimitPrice(), configuration.getStrategy().getStopLossStopPrice(), configuration.getStrategy().getStopLossLimitPrice());
             }
@@ -58,6 +58,7 @@ public class TradingbotAPI implements ITradingbotAPI {
                 System.out.println("Order get's closed");
                 this.alpacaAPI.closePosition(configuration.getSymbol());
             }
+            this.configuration.setRiskFactorChanged(true);
             return;
         } catch (AlpacaAPIRequestException e) {
             closeAllOrders();

@@ -1,8 +1,6 @@
 import Model.StopMode;
 import Model.ThreadDetails;
 import net.jacobpeterson.alpaca.AlpacaAPI;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class Main extends Thread {
     public static void main(String[] args) throws InterruptedException {

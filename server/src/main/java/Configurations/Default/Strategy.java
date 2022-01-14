@@ -36,7 +36,6 @@ public class Strategy extends BaseStrategy {
     @Override
     public Double evaluateChancesToBeSuccessful(List<MarketDataModel> marketData) {
         var profitLoss = SimulateStrategy.simulate(new Strategy(), marketData);
-        System.out.println("Estimation of profit: " + profitLoss);
         return profitLoss;
     }
 }
