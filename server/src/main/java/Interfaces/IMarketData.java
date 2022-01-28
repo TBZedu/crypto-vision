@@ -18,5 +18,5 @@ public interface IMarketData {
      * @param barsTimeFrame The time that should be between every data
      * @return The data from the market specified with the parameters.
      */
-    List<MarketDataModel> getMarketData(ZonedDateTime start, ZonedDateTime end, String symbol, BarsTimeFrame barsTimeFrame);
+    List<MarketDataModel> getMarketData(ZonedDateTime start, ZonedDateTime end, String symbol, BarsTimeFrame barsTimeFrame) throws Exception;
 }

@@ -20,6 +20,10 @@ public class Indicators {
         List<Double> highs = new ArrayList<Double>();
         List<Double> lows = new ArrayList<Double>();
 
+        if(pricesAmount > marketData.size()){
+            pricesAmount = marketData.size();
+        }
+
         for(int i = 0; i < pricesAmount; i++) {
             highs.add(marketData.get(i).getClosePrice());
             lows.add(marketData.get(i).getOpenPrice());

@@ -30,6 +30,22 @@ public class ReadWatchlistFile {
                 e.printStackTrace();
             }
         }
+        //removing empty props
+        prop = removeEmptyProps(prop);
+        return prop;
+    }
+
+    private static Properties removeEmptyProps(Properties prop) {
+        List<Object> emptyProps = new ArrayList<>();
+        prop.forEach((k, v) -> {
+            if(v == null){
+                emptyProps.add(k);
+            }
+        });
+
+        for(var emptyProp:emptyProps){
+            prop.remove(emptyProp);
+        }
         return prop;
     }
 }

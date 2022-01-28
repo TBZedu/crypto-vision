@@ -19,6 +19,8 @@ import java.util.List;
 // TODO get rid of references on BaseStrategy
 public abstract class BaseStrategy implements IStrategy {
 
+    protected String name = "Default Strategy";
+
     protected Double limitPrice = null;
     protected Double trailPercent = null;
     protected Double stopPrice = null;
@@ -38,6 +40,8 @@ public abstract class BaseStrategy implements IStrategy {
     protected Time timeFrameForEvaluation;
 
     protected Double secretKey;
+
+    public String getName(){ return name; }
 
     public final Double getSecretKey(){
         return secretKey;

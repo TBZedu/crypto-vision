@@ -44,12 +44,19 @@ public class TradingBot extends Thread {
                     tradingbotAPI.closeOrder();
                     isRunning = false;
                     System.out.println("Tradingbot on Market " + configuration.getSymbol() + " got shut down (fast).");
-                    return;
+                    break;
                 }
 
                 if(mainController.getStopMode(configuration.getSymbol()) == StopMode.normal){
                     isRunning = false;
                     System.out.println("Tradingbot on Market " + configuration.getSymbol() + " will get shut down soon (normal mode).");
+                }
+
+                if(configuration.getRiskFactor() == 0){
+                    configuration.setRiskFactorChanged(true);
+                    System.out.println("Riskfactor is 0, sleeping");
+                    Thread.sleep(1000);
+                    continue;
                 }
 
                 this.checkMarket();
@@ -73,7 +80,7 @@ public class TradingBot extends Thread {
                 tempResult = configuration.getStrategy().strategy(tempMarketData, this.tradingbotAPI.IsOrderSet(null));
                 if(this.tradingbotAPI.IsOrderSet(tempResult.getOrderSide()) == false && !isRunning){ // todo bring this decision to Strategy
                     tradingbotAPI.closeOrder();
-                    return;
+                    break;
                 }
 
                 this.setOrder(tempResult, tempMarketData);
@@ -101,11 +108,20 @@ public class TradingBot extends Thread {
                     e.printStackTrace();
                 }
             }
+            else{
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                this.noMarketData = false;
+            }
+
         }
     }
 
     /**
-     * verifys tempMarketData, if tempMarketData is null or empty noMarketData will be set true and it will return false
+     * Verifies tempMarketData, if tempMarketData is null or empty noMarketData will be set true and it will return false
      * @param tempMarketData marketData that should be checked
      * @return true if MarketData is valid and false if MarketData isn't
      */
@@ -148,6 +164,10 @@ public class TradingBot extends Thread {
     public void stopTrading(){
         isRunning = false;
         tradingbotAPI.closeAllOrders();
+    }
+
+    public void setConfiguration(TradingConfiguration configuration){
+        this.configuration = configuration;
     }
 
     /**

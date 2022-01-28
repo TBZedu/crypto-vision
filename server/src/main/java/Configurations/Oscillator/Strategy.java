@@ -12,6 +12,7 @@ import java.util.List;
 
 public class Strategy extends BaseStrategy {
     public Strategy() {
+        name = "Oscillator Strategy";
         secretKey = 39.434110292188667851326802853084;
         timeFrameForEvaluation = new Time(2000);
         zonedDateTimeStart = new ZoneDateTimeStart(20);
