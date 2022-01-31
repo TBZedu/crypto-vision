@@ -3,13 +3,11 @@ package Interfaces;
 import Model.MarketDataModel;
 import Model.Order;
 import Model.Time;
-import net.jacobpeterson.alpaca.enums.BarsTimeFrame;
-import net.jacobpeterson.alpaca.enums.OrderClass;
-import net.jacobpeterson.alpaca.enums.OrderTimeInForce;
-import net.jacobpeterson.alpaca.enums.OrderType;
+import net.jacobpeterson.alpaca.model.endpoint.marketdata.common.historical.bar.enums.BarTimePeriod;
+import net.jacobpeterson.alpaca.model.endpoint.orders.enums.OrderClass;
+import net.jacobpeterson.alpaca.model.endpoint.orders.enums.OrderTimeInForce;
+import net.jacobpeterson.alpaca.model.endpoint.orders.enums.OrderType;
 
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 public interface IStrategy {
@@ -41,9 +39,11 @@ public interface IStrategy {
 
     IZoneDateTimeEnd getZoneDateTimeEnd();
 
+    Integer getLimit();
+
     OrderClass getOrderClass();
 
-    BarsTimeFrame getBarsTimeFrame();
+    BarTimePeriod getBarsTimeFrame();
 
     IZoneDateTimeStart getZoneDateTimeStart();
 

@@ -1,12 +1,9 @@
 import Interfaces.ITradingbotAPI;
 import net.jacobpeterson.alpaca.AlpacaAPI;
-import net.jacobpeterson.alpaca.enums.OrderSide;
-import net.jacobpeterson.alpaca.enums.OrderTimeInForce;
-import net.jacobpeterson.alpaca.enums.OrderType;
-import net.jacobpeterson.alpaca.rest.exception.AlpacaAPIRequestException;
-import net.jacobpeterson.domain.alpaca.position.Position;
+import net.jacobpeterson.alpaca.model.endpoint.orders.enums.OrderSide;
+import net.jacobpeterson.alpaca.model.endpoint.positions.Position;
+import net.jacobpeterson.alpaca.rest.AlpacaClientException;
 import Configuration.TradingConfiguration;
-import org.apache.logging.log4j.core.config.Order;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,16 +27,16 @@ public class TradingbotAPI implements ITradingbotAPI {
         System.out.println("SetOrder get's called (Orderside: " + orderSide + ").");
         try {
             if(!IsOrderSet(orderSide)){
-                if(IsOrderSet(null)){
+                if(IsOrderSet()){
                     System.out.println("Closes Order of wrong OrderSide");
                     closeOrder();
                 }
                 System.out.println("Sets order");
-                int accountCash = (int)(Double.parseDouble(this.alpacaAPI.getAccount().getEquity()) / 100 * configuration.getRiskFactor() / stockPrice);
+                int accountCash = (int)(Double.parseDouble(this.alpacaAPI.account().get().getEquity()) / 100 * configuration.getRiskFactor() / stockPrice);
 
-                this.alpacaAPI.requestNewOrder(configuration.getSymbol(), accountCash , orderSide, configuration.getStrategy().getOrderType(), configuration.getStrategy().getOrderTimeInForce(), configuration.getStrategy().getLimitPrice(), configuration.getStrategy().getStopPrice(), configuration.getStrategy().getTrailPrice(), configuration.getStrategy().getTrailPercent(), configuration.getStrategy().getExtendedHours(), configuration.getStrategy().getClientOrderID(), configuration.getStrategy().getOrderClass(), configuration.getStrategy().getTakeProfitLimitPrice(), configuration.getStrategy().getStopLossStopPrice(), configuration.getStrategy().getStopLossLimitPrice());
+                this.alpacaAPI.orders().requestOrder(configuration.getSymbol(), (double)accountCash, null , orderSide, configuration.getStrategy().getOrderType(), configuration.getStrategy().getOrderTimeInForce(), configuration.getStrategy().getLimitPrice(), configuration.getStrategy().getStopPrice(), configuration.getStrategy().getTrailPrice(), configuration.getStrategy().getTrailPercent(), configuration.getStrategy().getExtendedHours(), configuration.getStrategy().getClientOrderID(), configuration.getStrategy().getOrderClass(), configuration.getStrategy().getTakeProfitLimitPrice(), configuration.getStrategy().getStopLossStopPrice(), configuration.getStrategy().getStopLossLimitPrice());
             }
-        } catch (AlpacaAPIRequestException e) {
+        } catch (AlpacaClientException e) {
             System.out.println("Exception with Warning: " + e);
             closeAllOrders();
             e.printStackTrace();
@@ -54,13 +51,13 @@ public class TradingbotAPI implements ITradingbotAPI {
     public void closeOrder(){
         System.out.println("closeOrder get's called");
         try {
-            if(IsOrderSet(null)){
+            if(IsOrderSet()){
                 System.out.println("Order get's closed");
-                this.alpacaAPI.closePosition(configuration.getSymbol());
+                this.alpacaAPI.positions().close(configuration.getSymbol(), 0 , 100.0);
             }
             this.configuration.setRiskFactorChanged(true);
             return;
-        } catch (AlpacaAPIRequestException e) {
+        } catch (AlpacaClientException e) {
             closeAllOrders();
             e.printStackTrace();
         }
@@ -74,8 +71,8 @@ public class TradingbotAPI implements ITradingbotAPI {
     public void closeAllOrders(){
         try {
             System.out.println("All orders get closed");
-            this.alpacaAPI.closeAllPositions();
-        } catch (AlpacaAPIRequestException e) {
+            this.alpacaAPI.positions().closeAll(true);
+        } catch (AlpacaClientException e) {
             throw new RuntimeException("Error with closing Positions, please check that all are closed!");
         }
     }
@@ -86,13 +83,13 @@ public class TradingbotAPI implements ITradingbotAPI {
      * @return true if there is a Order set that fits the requirments, false if not
      */
     @Override
-    public boolean IsOrderSet(OrderSide orderSide){
+    public boolean IsOrderSet(OrderSide ... orderSide){
         var sideHashMap = new HashMap<String, OrderSide>();
         sideHashMap.put("long", OrderSide.BUY);
         sideHashMap.put("short", OrderSide.SELL);
 
         try {
-            var openOrders = this.alpacaAPI.getOpenPositions();
+            var openOrders = this.alpacaAPI.positions().get();
             if(orderSide == null){
                 for(Position position:openOrders){
                     if(position.getSymbol().equals(configuration.getSymbol())){
@@ -108,7 +105,7 @@ public class TradingbotAPI implements ITradingbotAPI {
                 }
             }
             return false;
-        } catch (AlpacaAPIRequestException e) {
+        } catch (AlpacaClientException e) {
             e.printStackTrace();
         }
         return true;
@@ -119,11 +116,12 @@ public class TradingbotAPI implements ITradingbotAPI {
      * @return true if Stockmarket is online, false if not
      */
     public boolean IsMarketOnline(){
-        try {
-            return alpacaAPI.getClock().getIsOpen();
-        } catch (AlpacaAPIRequestException e) {
+      return true;
+        /*try {
+            return alpacaAPI.stockMarketData()..getIsOpen();
+        } catch (AlpacaClientException e) {
             e.printStackTrace();
             return false;
-        }
+        }*/
     }
 }

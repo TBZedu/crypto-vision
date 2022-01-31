@@ -246,7 +246,7 @@ public class MainController extends Thread{
         for(IStrategy strategy:strategies){
             List<MarketDataModel> data = null;
             try {
-                data = marketData.getMarketData(ZonedDateTime.now(ZoneId.of("America/New_York")).minusMinutes(strategy.getTimeFrameForEvaluation().getMinute()), ZonedDateTime.now(ZoneId.of("America/New_York")), symbol, strategy.getBarsTimeFrame());
+                data = marketData.getCryptoMarketData(ZonedDateTime.now(ZoneId.of("America/New_York")).minusMinutes(strategy.getTimeFrameForEvaluation().getMinute()), strategy.getLimit(), symbol, strategy.getBarsTimeFrame());
             } catch (Exception e) {
                 e.printStackTrace(); // should mention something is wrong with mark
             }

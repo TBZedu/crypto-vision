@@ -1,7 +1,6 @@
 package Interfaces;
 
-import net.jacobpeterson.alpaca.enums.OrderSide;
-import org.apache.logging.log4j.core.config.Order;
+import net.jacobpeterson.alpaca.model.endpoint.orders.enums.OrderSide;
 
 public interface ITradingbotAPI {
 
@@ -11,7 +10,7 @@ public interface ITradingbotAPI {
 
     void closeAllOrders();
 
-    boolean IsOrderSet(OrderSide orderSide);
+    boolean IsOrderSet(OrderSide ... orderSide);
 
     boolean IsMarketOnline();
 }

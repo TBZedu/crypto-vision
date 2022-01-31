@@ -1,10 +1,10 @@
 import Configurations.Default.Strategy;
 import net.jacobpeterson.alpaca.AlpacaAPI;
-import net.jacobpeterson.alpaca.enums.OrderSide;
-import net.jacobpeterson.alpaca.rest.exception.AlpacaAPIRequestException;
-import net.jacobpeterson.domain.alpaca.account.Account;
-import net.jacobpeterson.domain.alpaca.clock.Clock;
-import net.jacobpeterson.domain.alpaca.position.Position;
+import net.jacobpeterson.alpaca.model.endpoint.account.Account;
+import net.jacobpeterson.alpaca.model.endpoint.clock.Clock;
+import net.jacobpeterson.alpaca.model.endpoint.orders.enums.OrderSide;
+import net.jacobpeterson.alpaca.model.endpoint.positions.Position;
+import net.jacobpeterson.alpaca.rest.AlpacaClientException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,16 +25,16 @@ public class TradingbotAPITest {
     private ArrayList<Position> position;
 
     @Before
-    public void setup() throws AlpacaAPIRequestException {
+    public void setup() throws AlpacaClientException {
         alpacaAPI = mock(AlpacaAPI.class);
         clock = mock(Clock.class);
         account = mock(Account.class);
         position = new ArrayList<Position>();
         position.add(new Position("1", "test", "", "", "", "", "long", "", "", "", "", "", "", "", "", ""));
-        when(alpacaAPI.getOpenPositions()).thenReturn(position);
-        when(alpacaAPI.getClock()).thenReturn(clock);
+        when(alpacaAPI.positions().get()).thenReturn(position);
+        when(alpacaAPI.clock().get()).thenReturn(clock);
         when(clock.getIsOpen()).thenReturn(true);
-        when(alpacaAPI.getAccount()).thenReturn(account);
+        when(alpacaAPI.account().get()).thenReturn(account);
         when(account.getCash()).thenReturn("100000");
     }
 
@@ -62,10 +62,10 @@ public class TradingbotAPITest {
         TradingbotAPI tradingbotAPIOffline = new TradingbotAPI(configurationOffline, alpacaAPI);
 
         // Execute
-        boolean isOrderSetTest = tradingbotAPITest.IsOrderSet(null);
+        boolean isOrderSetTest = tradingbotAPITest.IsOrderSet();
         boolean isOrderSetTestBuy = tradingbotAPITest.IsOrderSet(OrderSide.BUY);
         boolean isOrderSetTestSell = tradingbotAPITest.IsOrderSet(OrderSide.SELL);
-        boolean isOrderSetOffline = tradingbotAPIOffline.IsOrderSet(null);
+        boolean isOrderSetOffline = tradingbotAPIOffline.IsOrderSet();
         boolean isOrderSetOfflineBuy = tradingbotAPIOffline.IsOrderSet(OrderSide.BUY);
         boolean isOrderSetOfflineSell = tradingbotAPIOffline.IsOrderSet(OrderSide.SELL);
 
@@ -79,7 +79,7 @@ public class TradingbotAPITest {
     }
 
     @Test
-    public void closeAllOrdersTest() throws AlpacaAPIRequestException {
+    public void closeAllOrdersTest() throws AlpacaClientException {
         // Setup
         TradingConfiguration configuration = new TradingConfiguration("test", new Strategy(), 100);
         TradingbotAPI tradingbotAPI = new TradingbotAPI(configuration, alpacaAPI);
@@ -88,11 +88,11 @@ public class TradingbotAPITest {
         tradingbotAPI.closeAllOrders();
 
         // Verify
-        verify(alpacaAPI, times(1)).closeAllPositions();
+        verify(alpacaAPI, times(1)).positions().closeAll(true);
     }
 
     @Test
-    public void closeOrderTest_with_Order_set() throws AlpacaAPIRequestException {
+    public void closeOrderTest_with_Order_set() throws AlpacaClientException {
         // Setup
         TradingConfiguration configuration = new TradingConfiguration("test", new Strategy(), 100);
         TradingbotAPI tradingbotAPI = new TradingbotAPI(configuration, alpacaAPI);
@@ -101,11 +101,11 @@ public class TradingbotAPITest {
         tradingbotAPI.closeOrder();
 
         // Verify
-        verify(alpacaAPI, times(1)).closePosition(configuration.getSymbol());
+        verify(alpacaAPI, times(1)).positions().close(configuration.getSymbol(), null, 100.0);
     }
 
     @Test
-    public void closeOrderTest_without_Order_set() throws AlpacaAPIRequestException {
+    public void closeOrderTest_without_Order_set() throws AlpacaClientException {
         // Setup
         TradingConfiguration configurationOffline = new TradingConfiguration("offline", new Strategy(), 100);
         TradingbotAPI tradingbotAPIOffline = new TradingbotAPI(configurationOffline, alpacaAPI);
@@ -114,12 +114,12 @@ public class TradingbotAPITest {
         tradingbotAPIOffline.closeOrder();
 
         // Verify
-        verify(alpacaAPI, times(0)).closePosition(anyString());
+        verify(alpacaAPI, times(0)).positions().close(anyString(), null, 100.0);
     }
 
 
     @Test
-    public void setOrderTest_other_OrderSide_saved() throws AlpacaAPIRequestException {
+    public void setOrderTest_other_OrderSide_saved() throws AlpacaClientException {
         // Setup
         TradingConfiguration configuration = new TradingConfiguration("test", new Strategy(), 100);
         TradingbotAPI tradingbotAPI = new TradingbotAPI(configuration, alpacaAPI);
@@ -129,12 +129,12 @@ public class TradingbotAPITest {
         tradingbotAPI.setOrder(OrderSide.SELL, 20.0);
 
         // Verify
-        verify(alpacaAPI, times(1)).closePosition(configuration.getSymbol());
-        verify(alpacaAPI, times(1)).requestNewOrder(configuration.getSymbol(), (int) 100000 / 100 * configuration.getRiskFactor() / 20, OrderSide.SELL, configuration.getStrategy().getOrderType(), configuration.getStrategy().getOrderTimeInForce(), configuration.getStrategy().getLimitPrice(), configuration.getStrategy().getStopPrice(), configuration.getStrategy().getTrailPrice(), configuration.getStrategy().getTrailPercent(), configuration.getStrategy().getExtendedHours(), configuration.getStrategy().getClientOrderID(), configuration.getStrategy().getOrderClass(), configuration.getStrategy().getTakeProfitLimitPrice(), configuration.getStrategy().getStopLossStopPrice(), configuration.getStrategy().getStopLossLimitPrice());
+        verify(alpacaAPI, times(1)).positions().close(configuration.getSymbol(), null, 100.0);
+        verify(alpacaAPI, times(1)).orders().requestOrder(configuration.getSymbol(), (double) (100000 / 100 * configuration.getRiskFactor() / 20), null, OrderSide.SELL, configuration.getStrategy().getOrderType(), configuration.getStrategy().getOrderTimeInForce(), configuration.getStrategy().getLimitPrice(), configuration.getStrategy().getStopPrice(), configuration.getStrategy().getTrailPrice(), configuration.getStrategy().getTrailPercent(), configuration.getStrategy().getExtendedHours(), configuration.getStrategy().getClientOrderID(), configuration.getStrategy().getOrderClass(), configuration.getStrategy().getTakeProfitLimitPrice(), configuration.getStrategy().getStopLossStopPrice(), configuration.getStrategy().getStopLossLimitPrice());
     }
 
     @Test
-    public void setOrderTest_same_OrderSide_saved() throws AlpacaAPIRequestException {
+    public void setOrderTest_same_OrderSide_saved() throws AlpacaClientException {
         // Setup
         TradingConfiguration configuration = new TradingConfiguration("test", new Strategy(), 100);
         TradingbotAPI tradingbotAPI = new TradingbotAPI(configuration, alpacaAPI);
@@ -144,7 +144,7 @@ public class TradingbotAPITest {
         tradingbotAPI.setOrder(OrderSide.BUY, 20.0);
 
         // Verify
-        verify(alpacaAPI, times(0)).closePosition(configuration.getSymbol());
-        verify(alpacaAPI, times(0)).requestNewOrder(configuration.getSymbol(), (int) 100000 / 100 * configuration.getRiskFactor() / 20, OrderSide.SELL, configuration.getStrategy().getOrderType(), configuration.getStrategy().getOrderTimeInForce(), configuration.getStrategy().getLimitPrice(), configuration.getStrategy().getStopPrice(), configuration.getStrategy().getTrailPrice(), configuration.getStrategy().getTrailPercent(), configuration.getStrategy().getExtendedHours(), configuration.getStrategy().getClientOrderID(), configuration.getStrategy().getOrderClass(), configuration.getStrategy().getTakeProfitLimitPrice(), configuration.getStrategy().getStopLossStopPrice(), configuration.getStrategy().getStopLossLimitPrice());
+        verify(alpacaAPI, times(0)).positions().close(configuration.getSymbol(), null, 100.0);
+        verify(alpacaAPI, times(0)).orders().requestOrder(configuration.getSymbol(), (double) 100000 / 100 * configuration.getRiskFactor() / 20, null, OrderSide.SELL, configuration.getStrategy().getOrderType(), configuration.getStrategy().getOrderTimeInForce(), configuration.getStrategy().getLimitPrice(), configuration.getStrategy().getStopPrice(), configuration.getStrategy().getTrailPrice(), configuration.getStrategy().getTrailPercent(), configuration.getStrategy().getExtendedHours(), configuration.getStrategy().getClientOrderID(), configuration.getStrategy().getOrderClass(), configuration.getStrategy().getTakeProfitLimitPrice(), configuration.getStrategy().getStopLossStopPrice(), configuration.getStrategy().getStopLossLimitPrice());
     }
 }

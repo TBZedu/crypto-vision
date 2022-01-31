@@ -4,7 +4,7 @@ import Interfaces.ITradingbotAPI;
 import Model.MarketDataModel;
 import Model.Order;
 import Model.StopMode;
-import net.jacobpeterson.alpaca.enums.OrderSide;
+import net.jacobpeterson.alpaca.model.endpoint.orders.enums.OrderSide;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -68,7 +68,7 @@ public class TradingBot extends Thread {
                 }
 
                 System.out.println("Get MarketData");
-                List<MarketDataModel> tempMarketData = this.marketData.getMarketData(configuration.getStrategy().getZoneDateTimeStart().getZoneDateTime(), configuration.getStrategy().getZoneDateTimeEnd().getZoneDateTime(), configuration.getSymbol(), configuration.getStrategy().getBarsTimeFrame());
+                List<MarketDataModel> tempMarketData = this.marketData.getCryptoMarketData(configuration.getStrategy().getZoneDateTimeStart().getZoneDateTime(), configuration.getStrategy().getLimit(), configuration.getSymbol(), configuration.getStrategy().getBarsTimeFrame());
 
                 if(!this.verifyTempMarketData(tempMarketData)){
                     continue;
@@ -77,8 +77,8 @@ public class TradingBot extends Thread {
 
                 System.out.println("TempMarketData has values " + tempMarketData.size() + ", closePrice: " + tempMarketData.get(0).getClosePrice() + ", openPrice " + tempMarketData.get(0).getOpenPrice());
 
-                tempResult = configuration.getStrategy().strategy(tempMarketData, this.tradingbotAPI.IsOrderSet(null));
-                if(this.tradingbotAPI.IsOrderSet(tempResult.getOrderSide()) == false && !isRunning){ // todo bring this decision to Strategy
+                tempResult = configuration.getStrategy().strategy(tempMarketData, this.tradingbotAPI.IsOrderSet());
+                if(!this.tradingbotAPI.IsOrderSet(tempResult.getOrderSide()) && !isRunning){ // todo bring this decision to Strategy
                     tradingbotAPI.closeOrder();
                     break;
                 }
@@ -99,7 +99,7 @@ public class TradingBot extends Thread {
      * Checks if noMarketData is true and if market is online. if market is offline, Thread will sleep
      */
     private void checkMarket() {
-        if(this.noMarketData){
+        /*if(this.noMarketData){
             if(!tradingbotAPI.IsMarketOnline()){
                 System.out.println("Market is closed, sleeping.");
                 try {
@@ -117,7 +117,7 @@ public class TradingBot extends Thread {
                 this.noMarketData = false;
             }
 
-        }
+        }*/
     }
 
     /**
