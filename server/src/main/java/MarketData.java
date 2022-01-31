@@ -68,7 +68,7 @@ public class MarketData implements IMarketData {
   public List<MarketDataModel> getCryptoMarketData(ZonedDateTime start, Integer limit, String symbol, BarTimePeriod barsTimeFrame) throws Exception {
     List<MarketDataModel> marketData = new ArrayList<MarketDataModel>();
     try {
-      CryptoBarsResponse btcBarsResponse = alpacaAPI.cryptoMarketData().getBars(symbol, Collections.singleton(Exchange.ERISX), start, limit, null,
+      CryptoBarsResponse btcBarsResponse = alpacaAPI.cryptoMarketData().getBars(symbol, null, start, limit, null,
         1, barsTimeFrame);
       var bars = btcBarsResponse.getBars();
       if(bars == null){

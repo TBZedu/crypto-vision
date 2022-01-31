@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainController extends Thread{
     private boolean isRunning;
-    private static final int PERCANTAGEOFTOTAL = 95;
+    private static final int MAXAMOUNTTRADING = 10;
     private IMarketData marketData;
     private AlpacaAPI alpacaAPI;
     private HashMap<String, ThreadDetails> runningThreads = new HashMap<>();
@@ -134,7 +134,7 @@ public class MainController extends Thread{
             if(this.oldRunningThreads.size() < this.runningThreads.size()){
                 this.runningThreads.forEach((k, v) -> {
                     if(this.oldRunningThreads.containsKey(k)){
-                        v.getConfiguration().setRiskFactor(PERCANTAGEOFTOTAL/ this.runningThreads.size()); //Todo test this
+                        v.getConfiguration().setRiskFactor(MAXAMOUNTTRADING / this.runningThreads.size()); //Todo test this
                     }
                 });
 
@@ -159,13 +159,13 @@ public class MainController extends Thread{
 
                 this.runningThreads.forEach((k, v) -> {
                     if(!this.oldRunningThreads.containsKey(k)){
-                        v.getConfiguration().setRiskFactor(PERCANTAGEOFTOTAL/this.runningThreads.size());
+                        v.getConfiguration().setRiskFactor(MAXAMOUNTTRADING /this.runningThreads.size());
                     }
                 });
             }
             else{
                 this.runningThreads.forEach((k, v)  -> {
-                    v.getConfiguration().setRiskFactor(PERCANTAGEOFTOTAL/this.runningThreads.size());
+                    v.getConfiguration().setRiskFactor(MAXAMOUNTTRADING /this.runningThreads.size());
                 });
             }
 
