@@ -1,0 +1,10 @@
+closeOrder get's called
+Order get's closed
+All orders get closed
+)SetOrder get's called (Orderside: BUY).
+*SetOrder get's called (Orderside: SELL).
+!Closes Order of wrong OrderSide
+closeOrder get's called
+Order get's closed
+Sets order
+closeOrder get's called

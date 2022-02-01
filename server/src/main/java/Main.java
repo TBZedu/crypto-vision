@@ -11,13 +11,13 @@ public class Main extends Thread {
 
         thread.start();
 
-        Thread.sleep(10000);
+        /* Thread.sleep(10000);
         try{
             mainController.stop(StopMode.fast, "TSLA");
             System.out.println("Stopped TSLA fast");
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+*/
     }
 }

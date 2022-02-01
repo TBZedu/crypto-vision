@@ -1,6 +1,6 @@
 package Model;
 
-import net.jacobpeterson.alpaca.enums.OrderSide;
+import net.jacobpeterson.alpaca.model.endpoint.orders.enums.OrderSide;
 
 /**
  * Order is an enum that has the 4 option: "BUY", "SELL", "CLOSE" and "DRAW".

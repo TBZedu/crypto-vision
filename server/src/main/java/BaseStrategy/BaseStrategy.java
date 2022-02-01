@@ -8,13 +8,12 @@ import Interfaces.IZoneDateTimeStart;
 import Model.MarketDataModel;
 import Model.Order;
 import Model.Time;
-import net.jacobpeterson.alpaca.enums.BarsTimeFrame;
-import net.jacobpeterson.alpaca.enums.OrderClass;
-import net.jacobpeterson.alpaca.enums.OrderTimeInForce;
-import net.jacobpeterson.alpaca.enums.OrderType;
+import net.jacobpeterson.alpaca.model.endpoint.marketdata.common.historical.bar.enums.BarTimePeriod;
+import net.jacobpeterson.alpaca.model.endpoint.orders.enums.OrderClass;
+import net.jacobpeterson.alpaca.model.endpoint.orders.enums.OrderTimeInForce;
+import net.jacobpeterson.alpaca.model.endpoint.orders.enums.OrderType;
 
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 // TODO get rid of references on BaseStrategy
 public abstract class BaseStrategy implements IStrategy {
@@ -34,9 +33,9 @@ public abstract class BaseStrategy implements IStrategy {
     protected IZoneDateTimeEnd zoneDateTimeEnd = new ZoneDataTimeNow();
     protected IZoneDateTimeStart zonedDateTimeStart = new ZoneDateTimeStart(1);
     protected OrderType orderType = OrderType.MARKET;
-    protected OrderTimeInForce orderTimeInForce = OrderTimeInForce.GTC;
+    protected OrderTimeInForce orderTimeInForce = OrderTimeInForce.GOOD_UNTIL_CANCELLED;
     protected OrderClass orderClass = null;
-    protected BarsTimeFrame barsTimeFrame = BarsTimeFrame.ONE_MIN;
+    protected BarTimePeriod barsTimeFrame = BarTimePeriod.MINUTE;
     protected Time timeFrameForEvaluation;
 
     protected Double secretKey;
@@ -95,11 +94,15 @@ public abstract class BaseStrategy implements IStrategy {
         return zoneDateTimeEnd;
     }
 
+    public Integer getLimit() {
+      return 10000; // TODO calculate this from getZoneDateTimeEnd / somehow doesn't accept null
+    }
+
     public OrderClass getOrderClass() {
         return orderClass;
     }
 
-    public BarsTimeFrame getBarsTimeFrame(){
+    public BarTimePeriod getBarsTimeFrame(){
         return barsTimeFrame;
     }
 

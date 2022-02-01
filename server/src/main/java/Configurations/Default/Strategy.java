@@ -4,7 +4,6 @@ import BaseStrategy.BaseStrategy;
 import Model.MarketDataModel;
 import Model.Order;
 import Model.Time;
-import org.apache.commons.lang.NullArgumentException;
 import BaseStrategy.SimulateStrategy;
 
 import java.util.List;
@@ -20,7 +19,7 @@ public class Strategy extends BaseStrategy {
     @Override
     public Order strategy(List<MarketDataModel> marketData, boolean isOrderSet) throws Exception {
         if (marketData == null || marketData.get(0) == null){
-            throw new NullArgumentException("Problem with marketdata!");
+            throw new NullPointerException("Problem with marketdata!"); // TODO better exception, was NullArgumentException
         }
         if (marketData.get(0).getOpenPrice() > marketData.get(0).getClosePrice()){
             return Order.BUY;
